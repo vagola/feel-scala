@@ -838,15 +838,9 @@ class FeelInterpreter {
   }
 
   private def filterList(list: List[Val], filter: Val => Val): Val =
-    list match {
-      case Nil => ValList(List())
-      case x :: xs =>
-        withBoolean(filter(x), _ match {
-          case false => filterList(xs, filter)
-          case true =>
-            withList(filterList(xs, filter), l => ValList(x :: l.items))
-        })
-    }
+    ValList(list.map(x => (x, filter(x))).collect {
+      case (x, ValBoolean(bool)) if bool => x
+    })
 
   private def filterList(list: List[Val], index: Number): Val = {
 

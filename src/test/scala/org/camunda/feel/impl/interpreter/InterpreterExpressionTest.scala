@@ -127,6 +127,13 @@ class InterpreterExpressionTest
     eval("([{x:[1,2]},{x:[3,4]},{x:[5,6]}].x[2])[1]") should be(ValNumber(3))
   }
 
+  it should "not fail on a long list with stack overflow" in {
+    val listOfNumbers = (1 to 10000).mkString("[", ", ", "][item > 5000]")
+    val result = ValList((5001 to 10000).map(n => ValNumber(n)).toList)
+
+    eval(listOfNumbers) shouldBe result
+  }
+
   "Null" should "compare to null" in {
 
     eval("null = null") should be(ValBoolean(true))
